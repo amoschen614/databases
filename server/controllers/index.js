@@ -4,22 +4,28 @@ module.exports = {
   messages: {
     get: function (req, res) {
       //console.log('CONTROLLER GET', models.messages.get());
-      res.statusCode = 200;
-      res.end(JSON.stringify(models.messages.get()));
-    }, // a function which handles a get request for all messages
+      let getMsg = models.messages.get(res);
+      getMsg.then((value) => {
+        res.statusCode = 200;
+        res.end(value);
+      });
+      getMsg.catch((err) => {
+        throw err;
+      });
+      
+    }, 
     post: function (req, res) {
-      console.log('POST messages, ', req.body);
       let messageObj = req.body;
-      models.messages.post(messageObj);
-      res.statusCode = 201;
-      res.end();
-    } // a function which handles posting a message to the database
+      let insertMsg = models.messages.post(messageObj);
+      getMsg.then((value) => {
+        res.statusCode = 201;
+        res.end();
+      }); 
+    }
   },
 
   users: {
-    // Ditto as above
     get: function (req, res) {
-      console.log('CONTROLLER GET');
       res.statusCode = 200;
       res.end(models.users.get());
     },
@@ -29,5 +35,6 @@ module.exports = {
       res.end();
     }
   }
+  
 };
 

@@ -16,3 +16,8 @@ CREATE TABLE messages (msgId INT PRIMARY KEY NOT NULL AUTO_INCREMENT, content va
  *    mysql -u root < server/schema.sql
  *  to create the database and the tables.*/
 
+
+insert into users(name) values ('user1');
+insert into users(name) values ('user2');
+insert into rooms(name) values('lobby');
+insert into rooms(name) values('HR');
