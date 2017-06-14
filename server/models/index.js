@@ -1,22 +1,44 @@
-var db = require('../db');
+var Sequelize = require('sequelize');
+var db = new Sequelize('chatdb', 'root', 'plantlife');
 
-var connection = db.dbConnection;
-connection.connect();
+var User = db.define('User', {
+  uid: { type: Sequelize.INTEGER, primaryKey: true },
+  name: Sequelize.STRING,
+  createdAt: Sequelize.DATE,
+  updatedAt: Sequelize.DATE
+});
 
+var Message = db.define('Message', {
+  msgId: { type: Sequelize.INTEGER, primaryKey: true }, 
+  userid: {type: Sequelize.INTEGER, references: {model: User, key: 'uid'}},
+  content: Sequelize.STRING,
+  //roomname: Sequelize.STRING
+  roomid: Sequelize.INTEGER,
+  createdAt: Sequelize.DATE,
+  updatedAt: Sequelize.DATE
+});
+
+User.hasMany(Message, {foreignKey: 'userid'});
+Message.belongsTo(User, {foreignKey: 'userid'});
 module.exports = {
   messages: {
-    get: function (res) {
+    get: function () {
       return new Promise( (resolve, reject) => {
-        connection.query('select * from messages', (err, results) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(JSON.stringify(results));
-          }
-        });
+        Message.sync()
+          .then(function(value) {
+            let msgs = Message.findAll({ attributes: ['content'], include: [{ model: User, attributes: ['name'] }]});
+            msgs.then((value) => {
+              msgs = value.map((instance) => {
+                return { name: instance.dataValues.User.name, content: instance.dataValues['content'] };
+              });
+              resolve(JSON.stringify(msgs));
+            });
+            
+          });
       });
-    }, 
-    post: function (messageObj) {
+    } //add comma later
+  /*  // Uncomment after refactoring to Sequelize
+  post: function (messageObj) {
       return new Promise( (resolve, reject) => { 
         // get uid, roomid
         let message, userid, roomid;
@@ -44,9 +66,10 @@ module.exports = {
               });
           });
       });
-    }
-  },
-
+    } */
+  } //add comma later
+// Uncomment after refactoring to Sequelize
+/*
   users: {
     get: function () {
       connection.query('select * from users', (err, results) => {
@@ -81,7 +104,7 @@ module.exports = {
         }
       });
     }); 
-  }
+  } */
 };
 
 

@@ -3,8 +3,7 @@ var models = require('../models');
 module.exports = {
   messages: {
     get: function (req, res) {
-      //console.log('CONTROLLER GET', models.messages.get());
-      let getMsg = models.messages.get(res);
+      let getMsg = models.messages.get();
       getMsg.then((value) => {
         res.statusCode = 200;
         res.end(value);
